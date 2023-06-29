@@ -155,7 +155,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
 
     # Implement IBurpExtender
     def registerExtenderCallbacks(self, callbacks):
-        print "Extension loaded"
+        print ("Extension loaded")
 
         self._callbacks = callbacks
         self._helpers = callbacks.getHelpers()
