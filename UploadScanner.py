@@ -188,14 +188,14 @@ class BurpExtender(IBurpExtender, IScannerCheck,
         # for thread in Thread.getAllStackTraces().keySet():
         #     print thread.getName()
         #     if thread.name == CollaboratorMonitorThread.NAME:
-        #         print "Found running CollaboratorMonitorThread, reusing"
+        #         print ("Found running CollaboratorMonitorThread, reusing"
         #         self.collab_monitor_thread = thread
         #         self.collab_monitor_thread.resume(self)
         #         break
         # else:
         #     # No break occured on the for loop
         #     # Create a new thread
-        #     print "No CollaboratorMonitorThread found, starting a new one"
+        #     print ("No CollaboratorMonitorThread found, starting a new one"
         #     self.collab_monitor_thread = CollaboratorMonitorThread(self)
         #     self.collab_monitor_thread.start()
 
@@ -514,7 +514,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
         self._create_ui()
 
         with self.globals_write_lock:
-            print "Deserializing settings..."
+            print ("Deserializing settings...")
             self.deserialize_settings()
 
 
@@ -698,7 +698,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
 
         # We can only work with requests that also have a response:
         if not brr.getRequest() or not brr.getResponse():
-            print "Tried to send a request where no response came back via context menu to the UploadScanner. Ignoring."
+            print ("Tried to send a request where no response came back via context menu to the UploadScanner. Ignoring."
         else:
             with self.globals_write_lock:
                 # right part
@@ -736,7 +736,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
             should_close = True
         if should_close:
             with self.globals_write_lock:
-                print "Closing tab", index
+                print ("Closing tab"), index
                 del self._option_panels[index]
         return should_close
 
@@ -770,18 +770,18 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                     break
             error_details += "\nExtension code location: " + location
         except:
-            print "Could not find plugin version..."
+            print ("Could not find plugin version...")
         try:
             error_details += "\nJython version: " + sys.version
             error_details += "\nJava version: " + System.getProperty("java.version")
         except:
-            print "Could not find Jython/Java version..."
+            print ("Could not find Jython/Java version...")
         try:
             error_details += "\nBurp version: " + " ".join([x for x in self._callbacks.getBurpVersion()])
             error_details += "\nCommand line arguments: " + " ".join([x for x in self._callbacks.getCommandLineArguments()])
             error_details += "\nWas loaded from BApp: " + str(self._callbacks.isExtensionBapp())
         except:
-            print "Could not find Burp details..."
+            print ("Could not find Burp details...")
         self._no_of_errors += 1
         if self._no_of_errors < 2:
             full_msg = 'The Burp extension "Upload Scanner" just crashed. The details of the issue are at the bottom. \n' \
@@ -800,7 +800,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                               "along with the bug report, as otherwise a root cause analysis is likely not possible. \n" \
                               "You can also find this request in the Extender tab in the UploadScanner Output tab. \n\n"
                 request_content = textwrap.fill(repr(FloydsHelpers.jb2ps(brr.getRequest())), 100)
-                print request_content
+                print (request_content)
 
                 if len(request_content) > 1000:
                     request_content = request_content[:1000] + "..."
@@ -873,14 +873,14 @@ class BurpExtender(IBurpExtender, IScannerCheck,
             if not messageIsRequest:
                 resp = base_request_response.getResponse()
                 if not resp:
-                    print "processHttpMessage called with BaseRequestResponse with no response. Ignoring."
+                    print ("processHttpMessage called with BaseRequestResponse with no response. Ignoring.")
                     return
                 if len(resp) >= BurpExtender.MAX_RESPONSE_SIZE:
                     # Don't look at responses longer than MAX_RESPONSE_SIZE
                     return
                 req = base_request_response.getRequest()
                 if not req:
-                    print "processHttpMessage called with BaseRequestResponse with no request. Ignoring."
+                    print ("processHttpMessage called with BaseRequestResponse with no request. Ignoring.")
                     return
                 iRequestInfo = self._helpers.analyzeRequest(base_request_response)
                 #print type(iRequestInfo.getUrl().toString()), repr(iRequestInfo.getUrl().toString())
@@ -975,7 +975,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                     if not req:
                         print ("doActiveScan called with BaseRequestResponse with no request. Ignoring.")
                         return
-                    print "Multipart filename found!"
+                    print ("Multipart filename found!")
                     if not options:
                         options = self._global_opts
                     injector = MultipartInjector(base_request_response, options, insertionPoint, self._helpers, BurpExtender.NEWLINE)
@@ -998,10 +998,10 @@ class BurpExtender(IBurpExtender, IScannerCheck,
             # this is an ugly hack...
             req = base_request_response.getRequest()
             if not req:
-                # print "getInsertionPoints was called with a BaseRequestResponse where the Request was None/null..."
+                # print ("getInsertionPoints was called with a BaseRequestResponse where the Request was None/null..."
                 return
             if "content-type: multipart/form-data" in FloydsHelpers.jb2ps(req).lower():
-                print "It seems to be a mutlipart/form-data we don't need to check with the FlexiInjector"
+                print ("It seems to be a mutlipart/form-data we don't need to check with the FlexiInjector")
             else:
                 self.run_flexiinjector(base_request_response)
             # Now after the above hack, do what this function actually does, return insertion points
@@ -1023,11 +1023,11 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                 # We test only those requests where we find at least the content in the request as some implementations
                 # might not send the filename to the server
                 if fi.get_uploaded_content():
-                    print "FlexiInjector insertion point found!"
+                    print ("FlexiInjector insertion point found!")
                     self.do_checks(fi)
                     return True
             elif not self._warned_flexiinjector:
-                print "You did not specify the file you are going to upload, no FlexiInjector checks will be done"
+                print ("You did not specify the file you are going to upload, no FlexiInjector checks will be done")
                 self._warned_flexiinjector = True
         except:
             self.show_error_popup(traceback.format_exc(), "run_flexiinjector", base_request_response)
@@ -1041,7 +1041,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
         burp_colab = BurpCollaborator(self._callbacks)
         if not burp_colab.is_available:
             burp_colab = None
-            print "Warning: No Burp Collaborator will be used"
+            print ("Warning: No Burp Collaborator will be used")
         colab_tests = []
 
         # We need to make sure that the global download matchers are from now on active for the URL we scan
@@ -1052,7 +1052,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
 
         try:
             # Sanity/debug check. Simply uploads a white picture called screenshot_white.png
-            print "Doing sanity check and uploading a white png file called screenshot_white.png"
+            print ("Doing sanity check and uploading a white png file called screenshot_white.png")
             self._sanity_check(injector)
             # Make sure we don't active scan again a request we are active scanning right now
             # Do this by checking for redl_enabled
@@ -1062,7 +1062,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                 self._callbacks.doActiveScan(service.getHost(), service.getPort(), 'https' in service.getProtocol(), brr.getRequest())
             # Imagetragick - CVE based and fixed, will deprecate at one point
             if injector.opts.modules['imagetragick'].isSelected():
-                print "\nDoing ImageTragick checks"
+                print ("\nDoing ImageTragick checks")
                 colab_tests.extend(self._imagetragick_cve_2016_3718(injector, burp_colab))
                 colab_tests.extend(self._imagetragick_cve_2016_3714_rce(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
@@ -1070,52 +1070,52 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                 self._bad_manners_cve_2018_16323(injector)
             # Magick (ImageMagick and GraphicsMagick) - generic, as these are exploiting features
             if injector.opts.modules['magick'].isSelected():
-                print "\nDoing Image-/GraphicsMagick checks"
+                print ("(\nDoing Image-/GraphicsMagick checks")
                 colab_tests.extend(self._magick(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # Ghostscript - CVE based and fixed, will deprecate at one point
             if injector.opts.modules['gs'].isSelected():
-                print "\nDoing Ghostscript checks"
+                print ("\nDoing Ghostscript checks")
                 colab_tests.extend(self._ghostscript(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # LibAVFormat - generic, as the file format will always support external URLs
             if injector.opts.modules['libavformat'].isSelected():
-                print "\nDoing LibAVFormat checks"
+                print ("\nDoing LibAVFormat checks")
                 colab_tests.extend(self._libavformat(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # PHP RCEs - generic, as there will always be someone who screws up PHP:
             if injector.opts.modules['php'].isSelected():
-                print "\nDoing PHP code checks"
+                print ("\nDoing PHP code checks")
                 self._php_rce(injector)
             # JSP RCEs - generic, as there will always be someone who screws up JSP:
             if injector.opts.modules['jsp'].isSelected():
-                print "\nDoing JSP code checks"
+                print ("\nDoing JSP code checks")
                 self._jsp_rce(injector)
             # ASP RCEs - generic, as there will always be someone who screws up ASP:
             if injector.opts.modules['asp'].isSelected():
-                print "\nDoing ASP code checks"
+                print ("\nDoing ASP code checks")
                 self._asp_rce(injector)
             # htaccess - generic
             # we do the htaccess upload early, because if it enables "Options +Includes ..." by uploading a .htaccess
             # then we can successfully do Server Side Includes, CGI execution, etc. in a later module...
             if injector.opts.modules['htaccess'].isSelected():
-                print "\nDoing htaccess/web.config checks"
+                print ("\nDoing htaccess/web.config checks")
                 colab_tests.extend(self._htaccess(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # CGIs - generic
             if injector.opts.modules['cgi'].isSelected():
-                print "\nDoing CGIs checks"
+                print ("\nDoing CGIs checks")
                 colab_tests.extend(self._cgi(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # SSI - generic
             if injector.opts.modules['ssi'].isSelected():
-                print "\nDoing SSI/ESI checks"
+                print ("\nDoing SSI/ESI checks")
                 colab_tests.extend(self._ssi(injector, burp_colab))
                 colab_tests.extend(self._esi(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # XXE - generic
             if injector.opts.modules['xxe'].isSelected():
-                print "\nDoing XXE checks"
+                print ("\nDoing XXE checks")
                 colab_tests.extend(self._xxe_svg_external_image(injector, burp_colab))
                 colab_tests.extend(self._xxe_svg_external_java_archive(injector, burp_colab))
                 colab_tests.extend(self._xxe_xml(injector, burp_colab))
@@ -1124,42 +1124,42 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # XSS - generic
             if injector.opts.modules['xss'].isSelected():
-                print "\nDoing XSS checks"
+                print ("\nDoing XSS checks")
                 self._xss_html(injector)
                 self._xss_svg(injector)
                 self._xss_swf(injector)
                 self._xss_backdoored_file(injector)
             # eicar - generic
             if injector.opts.modules['eicar'].isSelected():
-                print "\nDoing eicar checks"
+                print ("\nDoing eicar checks")
                 self._eicar(injector)
             # pdf - generic
             if injector.opts.modules['pdf'].isSelected():
-                print "\nDoing pdf checks"
+                print ("\nDoing pdf checks")
                 colab_tests.extend(self._pdf(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # other ssrf - generic
             if injector.opts.modules['ssrf'].isSelected():
-                print "\nDoing other SSRF checks"
+                print ("\nDoing other SSRF checks")
                 colab_tests.extend(self._ssrf(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # CSV/spreadsheet - generic
             if injector.opts.modules['csv_spreadsheet'].isSelected():
-                print "\nDoing CSV/spreadsheet checks"
+                print ("\nDoing CSV/spreadsheet checks")
                 colab_tests.extend(self._csv_spreadsheet(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # path traversal - generic
             if injector.opts.modules['path_traversal'].isSelected():
-                print "\nDoing path traversal checks"
+                print ("\nDoing path traversal checks")
                 self._path_traversal_archives(injector)
             # Polyglot - generic
             if injector.opts.modules['polyglot'].isSelected():
-                print "\nDoing polyglot checks"
+                print ("\nDoing polyglot checks")
                 colab_tests.extend(self._polyglot(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # Fingerping - generic
             if injector.opts.modules['fingerping'].isSelected():
-                print "\nDoing fingerping checks"
+                print ("\nDoing fingerping checks")
                 self._fingerping(injector)
 
             # TODO feature: "Analyzer module"
@@ -1173,21 +1173,21 @@ class BurpExtender(IBurpExtender, IScannerCheck,
 
             # Upload quirks - generic
             if injector.opts.modules['quirks'].isSelected():
-                print "\nDoing quirk checks"
+                print ("\nDoing quirk checks")
                 self._quirks_with_passive(injector)
                 self._quirks_without_passive(injector)
             # Generic URL replacer module - obviously generic
             if injector.opts.modules['url_replacer'].isSelected():
-                print "\nDoing generic URL replacement checks"
+                print ("\nDoing generic URL replacement checks")
                 colab_tests.extend(self._generic_url_replacer(injector, burp_colab))
                 self.collab_monitor_thread.add_or_update(burp_colab, colab_tests)
             # Recursive uploader - generic
             if injector.opts.modules['recursive_uploader'].isSelected():
-                print "\nDoing recursive upload checks"
+                print ("\nDoing recursive upload checks")
                 self._recursive_upload_files(injector, burp_colab)
             # Fuzz - generic
             if injector.opts.modules['fuzzer'].isSelected():
-                print "\nDoing fuzzer checks"
+                print ("\nDoing fuzzer checks")
                 self._fuzz(injector)
         except StopScanException:
             scan_was_stopped = True
@@ -1200,13 +1200,13 @@ class BurpExtender(IBurpExtender, IScannerCheck,
         if not scan_was_stopped:
             try:
                 if injector.opts.modules['dos'].isSelected():
-                    print "\nDoing timeout and DoS checks"
+                    print ("\nDoing timeout and DoS checks")
                     self._timeout_and_dos(injector)
             except StopScanException:
                 pass
         if injector.opts.redl_enabled:
             injector.opts.scan_was_stopped()
-        print "\nFinished"
+        print ("\nFinished")
 
     # Module functions
     def _sanity_check(self, injector):
@@ -1360,7 +1360,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                                 issue.httpMessagesPy = [urr.upload_rr, urr.download_rr]
                                 self._add_scan_issue(issue)
                             #else:
-                                #print "Although we uploaded a white XBM picture, the server returned a non-grayscale picture..."
+                                #print ("Although we uploaded a white XBM picture, the server returned a non-grayscale picture..."
 
     def _imagetragick_cve_2016_3714_rce(self, injector, burp_colab):
         colab_tests = []
@@ -1454,7 +1454,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
             for basename in basenames:
                 details = base_details + detail_colab.format(cmd_name, basename)
                 issue = self._create_issue_template(injector.get_brr(), name, details, confidence, severity)
-                # print "Sending basename, replace", repr(basename), repr(replace)
+                # print ("Sending basename, replace", repr(basename), repr(replace)
                 colabs.extend(self._send_collaborator(injector, burp_colab, types, basename, content, issue, replace=replace))
 
         return colabs
@@ -3376,7 +3376,7 @@ trailer <<
                     body_offset = i_response_info.getBodyOffset()
                     body = resp[body_offset:]
                     if body.startswith('\x89PNG'):
-                        # print "Downloaded", orig_filename, "is a PNG. Content:"
+                        # print ("Downloaded", orig_filename, "is a PNG. Content:"
                         # print repr(body)
                         # Make sure this image is not the same as *the last* image we uploaded and successfully downloaded
                         # but where the upload response had a different status code.
@@ -3390,7 +3390,7 @@ trailer <<
                         # are not uploaded after each other... This works OKish so far.
                         status_code = self._helpers.analyzeResponse(urr.upload_rr.getResponse()).getStatusCode()
                         if body == last_picture and not last_status_code == status_code:
-                            print "Fingerping: Ignoring downloaded picture", orig_filename, "as it probably didn't change on server"
+                            print ("Fingerping: Ignoring downloaded picture", orig_filename, "as it probably didn't change on server"
                         else:
                             last_picture = body
                             last_status_code = status_code
@@ -3400,7 +3400,7 @@ trailer <<
                             # if yes convert JPEGs to PNG and then use them in the same way...
 
         confidence = "Tentative"
-        print "Fingerping module was able to download", str(number_of_responses), \
+        print ("Fingerping module was able to download", str(number_of_responses), \
             "of", str(len(FingerpingImages.all_images)), "images as PNGs again"
         results, fingerprintScores = f.do_tests(downloads, True)
         text_score, total = f.get_results_table(fingerprintScores)
@@ -3668,8 +3668,8 @@ trailer <<
                         if m:
                             mime_type = m
                         else:
-                            print "Couldn't find mime_type for", filepath
-                            print "Trying file extension"
+                            print ("Couldn't find mime_type for", filepath
+                            print ("Trying file extension"
                             mime_type = FloydsHelpers.mime_type_from_ext(new_ext)
                 if injector.opts.ru_guess_file_ext:
                     if mime_type:
@@ -3683,7 +3683,7 @@ trailer <<
 
                 # Send the original content first
                 new_filename = new_name + "0" + new_ext
-                print "Recursive Uploader doing", new_filename, mime_type
+                print ("Recursive Uploader doing", new_filename, mime_type
                 req = injector.get_request(new_filename, content, mime_type)
                 if req:
                     self._make_http_request(injector, req)
@@ -3696,7 +3696,7 @@ trailer <<
                             for content, colab_url in self._generic_url_do_replace(burp_colab, prot, content):
                                 new_filename = new_name + str(i) + new_ext
                                 i += 1
-                                print "Recursive Uploader doing", new_filename, mime_type, colab_url
+                                print ("Recursive Uploader doing", new_filename, mime_type, colab_url
                                 req = injector.get_request(new_filename, content, mime_type)
                                 if req:
                                     urr = self._make_http_request(injector, req)
@@ -3713,7 +3713,7 @@ trailer <<
         for _ in xrange(0, injector.opts.fuzzer_known_mutations):
             new_content = copy.copy(content)
             index = random.choice(xrange(0, len(new_content)))
-            print "At byte index", index, "inserted known fuzz string"
+            print ("At byte index", index, "inserted known fuzz string"
             new_content = new_content[:index] + random.choice(self.KNOWN_FUZZ_STRINGS) + new_content[index + 1:]
             name, ext = os.path.splitext(orig_filename)
             new_filename = name + str(name_increment) + ext
@@ -3726,12 +3726,12 @@ trailer <<
             index = random.randint(0, len(new_content) - 1)
             if random.choice((True, False)):
                 # byte change
-                print "At byte index", index, "changed to new byte"
+                print ("At byte index", index, "changed to new byte"
                 new_content = new_content[:index] + chr(random.randint(0, 255)) + new_content[index + 1:]
             else:
                 # bit change
                 bit_index = random.randint(0, 7)
-                print "At byte index", index, "changed bit", bit_index
+                print ("At byte index", index, "changed bit", bit_index
                 new_byte = chr(ord(new_content[index]) ^ (2 ** bit_index))
                 new_content = new_content[:index] + new_byte + new_content[index + 1:]
             name, ext = os.path.splitext(orig_filename)
@@ -4252,14 +4252,14 @@ trailer <<
                             if BurpExtender.MARKER_COLLAB_URL not in content and \
                             BurpExtender.MARKER_COLLAB_URL not in new_basename and \
                             BurpExtender.MARKER_COLLAB_URL not in already_found:
-                                print "Warning: Magic marker {} (looped) not found in content or filename of " \
+                                print ("Warning: Magic marker {} (looped) not found in content or filename of " \
                                       "_send_collaborator:\n {} {}".format(BurpExtender.MARKER_COLLAB_URL, repr(content), repr(basename))
                             already_found.append(BurpExtender.MARKER_COLLAB_URL)
                             new_content = new_content.replace(BurpExtender.MARKER_COLLAB_URL, prot + colab_url + "/")
                             new_basename = new_basename.replace(BurpExtender.MARKER_COLLAB_URL, prot + colab_url + "/")
                         else:
                             if repl not in content and repl not in new_basename and repl not in already_found:
-                                print "Warning: Marker", repl, "not found in content or filename of _send_collaborator:\n", repr(content), repr(basename)
+                                print ("Warning: Marker", repl, "not found in content or filename of _send_collaborator:\n", repr(content), repr(basename)
                             already_found.append(repl)
                             new_content = new_content.replace(repl, colab_url)
                             new_basename = new_basename.replace(repl, colab_url)
@@ -4269,7 +4269,7 @@ trailer <<
                     # we got a string that has to be replaced with the collaborator URL
                     # no protocol here!
                     if replace not in content and replace not in basename:
-                        print "Warning: Magic marker (str)", replace, "not found in content or filename of _send_collaborator:\n", repr(content), repr(basename)
+                        print ("Warning: Magic marker (str)", replace, "not found in content or filename of _send_collaborator:\n", repr(content), repr(basename)
                     new_content = content.replace(replace, colab_url)
                     new_basename = basename.replace(replace, colab_url)
                     # We don't need the different prot here, so break the inner loop over the protocols once sent
@@ -4277,7 +4277,7 @@ trailer <<
                 else:
                     # the default is we simply replace BurpExtender.MARKER_COLLAB_URL with a collaborator URL
                     if BurpExtender.MARKER_COLLAB_URL not in content and BurpExtender.MARKER_COLLAB_URL not in basename:
-                        print "Warning: Magic marker (default) {} not found in content or filename of " \
+                        print ("Warning: Magic marker (default) {} not found in content or filename of " \
                               "_send_collaborator:\n {} {}".format(BurpExtender.MARKER_COLLAB_URL, repr(content), repr(basename))
                     new_content = content.replace(BurpExtender.MARKER_COLLAB_URL, prot + colab_url + "/")
                     new_basename = basename.replace(BurpExtender.MARKER_COLLAB_URL, prot + colab_url + "/")
@@ -4323,7 +4323,7 @@ trailer <<
                     resp = self._make_http_request(injector, req, throttle=False)
                 if resp and time.time() - start > timeout_detection_time:
                     # found a timeout, let's confirm with a changed request so it doesn't get a cached response
-                    print "TIMEOUT DETECTED! Now checking if really a timeout or just a random timeout. " \
+                    print ("TIMEOUT DETECTED! Now checking if really a timeout or just a random timeout. " \
                           "Request leading to first timeout was:"
                     print repr(req)
                     if randomize:
@@ -4349,7 +4349,7 @@ trailer <<
                             # Returning here is an option, but actually knowing all different kind of injections is nicer
                             # return
                         else:
-                            print "Unfortunately, this seems to be a false positive... not reporting"
+                            print ("Unfortunately, this seems to be a false positive... not reporting"
 
     def _create_issue_template(self, base_request_response, name, detail, confidence, severity):
         service = base_request_response.getHttpService()
@@ -4359,7 +4359,7 @@ trailer <<
 
     def _make_http_request(self, injector, req, report_timeouts=True, throttle=True, redownload_filename=None):
         if injector.opts.redl_enabled and injector.opts.scan_controler.requesting_stop:
-            print "User is requesting stop..."
+            print ("User is requesting stop..."
             raise StopScanException()
 
         #sys.stdout.write(".")
@@ -4377,7 +4377,7 @@ trailer <<
         req = req.replace("${RANDOMIZE}", str(random.randint(100000000000, 999999999999)))
         base_request_response = injector.get_brr()
         service = base_request_response.getHttpService()
-        # print "_make_http_request", service
+        # print ("_make_http_request", service
         attack = self._callbacks.makeHttpRequest(service, req)
         resp = attack.getResponse()
         if resp:
@@ -4400,7 +4400,7 @@ trailer <<
         else:
             urr = None
             if report_timeouts:
-                print "Adding informative for request timeout"
+                print ("Adding informative for request timeout"
                 desc = "A timeout occured when uploading a file. This could mean that you did memory exhaustion or " \
                        "a DoS attack on some component of the website. Or it was just a regular timeout. Check manually."
                 service = base_request_response.getHttpService()
@@ -4423,7 +4423,7 @@ class FloydsHelpers(object):
                 h[index] = x[:len("content-length:")] + " " + str(length)
                 return newline.join(h)
         else:
-            print "WARNING: Couldn't find Content-Length header in request, simply adding this header"
+            print ("WARNING: Couldn't find Content-Length header in request, simply adding this header"
             h.insert(1, "Content-Length: " + str(length))
             return newline.join(h)
 
@@ -4495,7 +4495,7 @@ class FloydsHelpers(object):
     @staticmethod
     def between_markers(content, start, end, with_markers=False):
         if not isinstance(content, str) or not isinstance(start, str) or not isinstance(end, str):
-            print "Warning: Trying to find between_markers of type {} {} {}, " \
+            print ("Warning: Trying to find between_markers of type {} {} {}, " \
                   "which are: {} {} {}".format(type(content), type(start), type(end), content, start, end)
         if start and end and start in content and end in content:
             try:
@@ -4537,12 +4537,12 @@ class ImageHelpers(object):
                     fileformat = readers.next().getFormatName()
                     return io, fileformat
                 else:
-                    print "Exception in get_imageio, ImageIO seems to be able to read an image but not get a ImageReader for it"
+                    print ("Exception in get_imageio, ImageIO seems to be able to read an image but not get a ImageReader for it"
             else:
-                # print "Not a valid image in get_imageio"
+                # print ("Not a valid image in get_imageio"
                 pass
         except Exception, e:
-            print "Couldn't do get_imageio"
+            print ("Couldn't do get_imageio"
             print e
         return None, None
 
@@ -4553,7 +4553,7 @@ class ImageHelpers(object):
             if io:
                 return io.getWidth(), io.getHeight(), fileformat
         except Exception, e:
-            print "Couldn't do image_width_height"
+            print ("Couldn't do image_width_height"
             print e
         return None, None, None
 
@@ -4575,10 +4575,10 @@ class ImageHelpers(object):
                 ImageIO.write(scaled_image, fileformat, output_stream)
                 output = FloydsHelpers.jb2ps(output_stream.toByteArray())
             else:
-                # print "Not a valid image in rescale_image"
+                # print ("Not a valid image in rescale_image"
                 pass
         except Exception, e:
-            print "Exception in rescale_image called with {} {} {}, but simply ignoring and going on".format(width, height, repr(content[:100]))
+            print ("Exception in rescale_image called with {} {} {}, but simply ignoring and going on".format(width, height, repr(content[:100]))
             print e
         return output
 
@@ -4594,7 +4594,7 @@ class ImageHelpers(object):
                 # turn Java array into list..
                 output = [x for x in output]
         except Exception, e:
-            print "Exception in get_image_rgb_list called with {}, but simply ignoring and going on".format(repr(content[:100]))
+            print ("Exception in get_image_rgb_list called with {}, but simply ignoring and going on".format(repr(content[:100]))
             print e
         return output
 
@@ -4608,7 +4608,7 @@ class ImageHelpers(object):
             ImageIO.write(img, type_ext, output_stream)
             output = FloydsHelpers.jb2ps(output_stream.toByteArray())
         except Exception, e:
-            print "Exception in get_image_from_rgb_list called with {}, but simply ignoring and going on".format(repr(rgbs[:100]))
+            print ("Exception in get_image_from_rgb_list called with {}, but simply ignoring and going on".format(repr(rgbs[:100]))
             print e
         return output
 
@@ -4634,7 +4634,7 @@ class ImageHelpers(object):
                     if not all_grayscale:
                         break
         except Exception, e:
-            print "Exception in is_grayscale called with {}, but simply ignoring and going on".format(repr(content[:100]))
+            print ("Exception in is_grayscale called with {}, but simply ignoring and going on".format(repr(content[:100]))
             print e
         return all_grayscale
 
@@ -4653,7 +4653,7 @@ class ImageHelpers(object):
             ImageIO.write(buffered_image, type_ext, output_stream)
             output = FloydsHelpers.jb2ps(output_stream.toByteArray())
         except Exception, e:
-            print "Exception in new_image called with {} {} {}, but simply ignoring and going on".format(width, height, type_ext)
+            print ("Exception in new_image called with {} {} {}, but simply ignoring and going on".format(width, height, type_ext)
             print e
         return output
 
@@ -4706,7 +4706,7 @@ class BurpCollaborator:
             current_length -= 1
         padding = BurpCollaborator.FIXED_PAYLOAD_SIZE - current_length
         if padding < 0:
-            print "Warning: Something is wrong with fixed size payload calculation in BurpCollaborator class. " \
+            print ("Warning: Something is wrong with fixed size payload calculation in BurpCollaborator class. " \
                   "Did you reconfigure the Collaborator server?"
         elif padding == 0:
             pass  # No need to do padding
@@ -4932,12 +4932,12 @@ class MultipartInjector(Injector):
         self._helpers = helpers
         self._newline = newline
         self._default_file_extension = FloydsHelpers.file_extension(self._insertionPoint) or ''
-        # print "self._default_file_extension", self._default_file_extension
+        # print ("self._default_file_extension", self._default_file_extension
 
     def get_uploaded_content(self):
         start, _ = self._insertionPoint.getPayloadOffsets(self._insertionPoint.getBaseValue())
         meant_multipart_index, multiparts, boundary, headers = self._split_multipart(self._req, start)
-        # print "meant_multipart_index, multiparts, boundary, headers", [meant_multipart_index, multiparts, boundary, headers]
+        # print ("meant_multipart_index, multiparts, boundary, headers", [meant_multipart_index, multiparts, boundary, headers]
         if multiparts:
             content = self.get_multipart_content(multiparts[meant_multipart_index])
             # as defined in get_multipart_content this returns the content plus a self._newline at the end
@@ -4955,11 +4955,11 @@ class MultipartInjector(Injector):
         start, _ = self._insertionPoint.getPayloadOffsets(self._insertionPoint.getBaseValue())
         meant_multipart_index, multiparts, boundary, headers = self._split_multipart(self._req, start)
         if multiparts:
-            # print "type self.get_multipart_content_type(multiparts[meant_multipart_index])", type(self.get_multipart_content_type(multiparts[meant_multipart_index]))
+            # print ("type self.get_multipart_content_type(multiparts[meant_multipart_index])", type(self.get_multipart_content_type(multiparts[meant_multipart_index]))
             return self.get_multipart_content_type(multiparts[meant_multipart_index])
 
     def get_uploaded_filename(self):
-        # print "type self._insertionPoint.getBaseValue()", type(self._insertionPoint.getBaseValue())
+        # print ("type self._insertionPoint.getBaseValue()", type(self._insertionPoint.getBaseValue())
         base_value = self._insertionPoint.getBaseValue()
         if base_value: # getBaseValue() might be None in rare cases
             return FloydsHelpers.u2s(base_value)
@@ -4982,13 +4982,13 @@ class MultipartInjector(Injector):
                     # Where we will inject the content, we will only do header changes
                     multipart_headers = self.get_multipart_headers(multipart)
                     if multipart_headers and self.opts.replace_filesize and old_size in multipart_headers and old_size > 100 and old_size != new_size:
-                        # print "Replacing in the multipart header with content old content size", old_size, "with new size", new_size
+                        # print ("Replacing in the multipart header with content old content size", old_size, "with new size", new_size
                         multipart_headers = multipart_headers.replace(old_size, new_size)
                         multipart = multipart_headers + self._newline + self._newline + self.get_multipart_content(
                             multipart)
                         multiparts[index] = multipart
                     if multipart_headers and self.opts.replace_filename and old_filename and old_filename in multipart_headers and old_filename != new_filename:
-                        # print "Replacing in the multipart header with content old filename", repr(old_filename), "with new filename", new_filename
+                        # print ("Replacing in the multipart header with content old filename", repr(old_filename), "with new filename", new_filename
                         multipart_headers = multipart_headers.replace(old_filename, new_filename)
                         multipart = multipart_headers + self._newline + self._newline + self.get_multipart_content(
                             multipart)
@@ -4998,15 +4998,15 @@ class MultipartInjector(Injector):
                         # honor self.opts.replace_ct
                 else:
                     if self.opts.replace_filesize and old_size > 100 and old_size and old_size in multipart and old_size != new_size:
-                        # print "Replacing old content size", old_size, "with new size", new_size, "in multipart number", index
+                        # print ("Replacing old content size", old_size, "with new size", new_size, "in multipart number", index
                         new_multipart = multipart.replace(old_size, new_size)
                         multiparts[index] = new_multipart
                     if self.opts.replace_ct and old_ct and new_ct and old_ct and old_ct in multipart and old_ct != new_ct :
-                        # print "Replacing old content-type", old_ct, "with new", new_ct, "in multipart number", index
+                        # print ("Replacing old content-type", old_ct, "with new", new_ct, "in multipart number", index
                         new_multipart = multipart.replace(old_ct, new_ct)
                         multiparts[index] = new_multipart
                     if self.opts.replace_filename and old_filename and old_filename in multipart and old_filename != new_filename:
-                        # print "Replacing old filename", old_filename, "with new", new_filename, "in multipart number", index
+                        # print ("Replacing old filename", old_filename, "with new", new_filename, "in multipart number", index
                         new_multipart = multipart.replace(old_filename, new_filename)
                         multiparts[index] = new_multipart
             # Now also take care that a filename in the URL is replaced with the new filename
@@ -5028,7 +5028,7 @@ class MultipartInjector(Injector):
         double_newline = self._newline + self._newline
         header_body = multipart.split(double_newline)
         if not len(header_body) >= 2:
-            print "Warning: Strange multipart that has no header and body! Assuming there is only a body."
+            print ("Warning: Strange multipart that has no header and body! Assuming there is only a body."
             return ''
         # This starts with a self._newline, but doesn't end in one
         return header_body[0]
@@ -5037,7 +5037,7 @@ class MultipartInjector(Injector):
         double_newline = self._newline + self._newline
         header_body = multipart.split(double_newline)
         if not len(header_body) >= 2:
-            print "Warning: Strange multipart that has no header and body! Assuming there is only a body."
+            print ("Warning: Strange multipart that has no header and body! Assuming there is only a body."
             return multipart
         body = header_body[1:]
         # This does not start with a self._newline, but ends in one
@@ -5050,28 +5050,28 @@ class MultipartInjector(Injector):
             for header in header_lines:
                 if header.lower().startswith('content-type: '):
                     return header[len('content-type: '):]
-        print "Error: Couldn't find Content-Type header in Multipart."
+        print ("Error: Couldn't find Content-Type header in Multipart."
 
     def _split_multipart(self, request, payload_offset):
         i_request_info = self._helpers.analyzeRequest(request)
         boundary = self._find_boundary([FloydsHelpers.u2s(x) for x in i_request_info.getHeaders()])
         if not boundary:
-            print "Error: No boundary found"
+            print ("Error: No boundary found"
             return None, None, None, None
         body_offset = i_request_info.getBodyOffset()
         headers = request[:body_offset]
         body = request[body_offset:]
         actual_boundary = "--" + boundary
         if not body.startswith(actual_boundary):
-            print "Error: Body does not start with two hyphens plus boundary"
-            print "First 60 chars of body:  ", repr(body[:60])
-            print "First boundary should be:", repr(actual_boundary)
+            print ("Error: Body does not start with two hyphens plus boundary"
+            print ("First 60 chars of body:  ", repr(body[:60])
+            print ("First boundary should be:", repr(actual_boundary)
             return None, None, None, None
         multiparts = body.split(actual_boundary)
         multiparts = multiparts[1:]
         if not multiparts[-1].strip() == "--":
-            print "Error: Body does not end with boundary plus two hyphens!"
-            print "End of multipart:  ", repr(multiparts[-1])
+            print ("Error: Body does not end with boundary plus two hyphens!"
+            print ("End of multipart:  ", repr(multiparts[-1])
             return None, None, None, None
         multiparts = multiparts[:-1]
         # so which multipart is meant with the insertionPoint?
@@ -5093,7 +5093,7 @@ class MultipartInjector(Injector):
                 multipart_header = x
                 break
         else:
-            print "Error: Although this is supposed to be a INS_PARAM_MULTIPART_ATTR we couldn't find the content-type: multipart/form-data header"
+            print ("Error: Although this is supposed to be a INS_PARAM_MULTIPART_ATTR we couldn't find the content-type: multipart/form-data header"
             return None
         if 'boundary=' in multipart_header:
             boundary = multipart_header.split('boundary=')[1]
@@ -5101,13 +5101,13 @@ class MultipartInjector(Injector):
                 boundary = boundary.split(";")[0]
             return boundary.strip()
         else:
-            print "Error: Although this is supposed to be a INS_PARAM_MULTIPART_ATTR we couldn't find the boundary in the content-type: multipart/form-data header"
+            print ("Error: Although this is supposed to be a INS_PARAM_MULTIPART_ATTR we couldn't find the boundary in the content-type: multipart/form-data header"
             return None
 
     def _set_multipart_content(self, multipart, content, content_type):
         header = self.get_multipart_headers(multipart)
         if not header:
-            print "Warning: Strange multipart that has no header and body! Assuming there is only a body."
+            print ("Warning: Strange multipart that has no header and body! Assuming there is only a body."
             return self._newline + content + self._newline
         header_lines = header.split(self._newline)
         # header_lines is usually an empty string (newline after the beginning boundary)
@@ -5118,8 +5118,8 @@ class MultipartInjector(Injector):
         if len(header_lines) < 3:
             # we simply assume that there is only a Content-Disposition header (otherwise
             # Burp wouldn't have passed a INS_PARAM_MULTIPART_ATTR)
-            print "Warning: Strange multipart that has only one header (usually there is at least Content-Disposition and Content-Type)"
-            print "Header:", header
+            print ("Warning: Strange multipart that has only one header (usually there is at least Content-Disposition and Content-Type)"
+            print ("Header:", header
         if content_type and self.opts.replace_ct:
             # Find Content-Type header
             content_type_header_index = None
@@ -5129,7 +5129,7 @@ class MultipartInjector(Injector):
                     break
             else:
                 # Didn't find a Content-Type header, so we won't set it either
-                print "Warning: Strange multipart that has headers, but no Content-Type header"
+                print ("Warning: Strange multipart that has headers, but no Content-Type header"
                 return self._newline.join(header_lines) + self._newline + self._newline + content + self._newline
             name = header_lines[content_type_header_index][:len('content-type: ')]  # trick to use original capitalization of "Content-Type"
             header_lines[content_type_header_index] = name + content_type
@@ -5177,7 +5177,7 @@ class InsertionPointProviderForActiveScan(IScannerInsertionPointProvider):
             request_lower = req.lower()
             if "content-type: multipart/form-data" in request_lower and \
                     CustomMultipartInsertionPoint.FILENAME_MARKER in req:
-                print "MultipartInjector insertion point found for getInsertionPoint ActiveScan!"
+                print ("MultipartInjector insertion point found for getInsertionPoint ActiveScan!"
                 insertionPoint = CustomMultipartInsertionPoint(self._helpers, BurpExtender.NEWLINE, req)
                 injector = MultipartInjector(base_request_response, self._opts, insertionPoint, self._helpers, BurpExtender.NEWLINE)
             elif self._opts.fi_ofilename:
@@ -5185,7 +5185,7 @@ class InsertionPointProviderForActiveScan(IScannerInsertionPointProvider):
                 # We test only those requests where we find at least the content in the request as some implementations
                 # might not send the filename to the server
                 if fi.get_uploaded_content():
-                    print "FlexiInjector insertion point found for getInsertionPoint ActiveScan!"
+                    print ("FlexiInjector insertion point found for getInsertionPoint ActiveScan!"
                     injector = fi
             if injector:
                 # First the feature that we can detect CSVs
@@ -5424,7 +5424,7 @@ class InsertionPointForActiveScan(IScannerInsertionPoint):
             if name and ext:
                 self.insertion_point_name = "FileContent" + name + ext[1:]
         except StopIteration:
-            print "Error: No file created in constructor of InsertionPointForActiveScan, this is probably pretty bad."
+            print ("Error: No file created in constructor of InsertionPointForActiveScan, this is probably pretty bad."
         self.index = 0
 
     def _create_content(self, payload):
@@ -5448,7 +5448,7 @@ class InsertionPointForActiveScan(IScannerInsertionPoint):
                 if req:
                     return req, payload
         except StopIteration:
-            print "No file created"
+            print ("No file created"
         return None, None
 
     def buildRequest(self, payload):
@@ -5651,8 +5651,8 @@ class BackdooredFile:
                 # this results in a short placeholder that is not unique and might therefore destroy
                 # the content later on. Warn and not include this file then.
                 if len(filename) < 5:
-                    print "WARNING: The zip file filename", repr(filename), "is too short and includes a null byte."
-                    print "WARNING: This is not supported by the create_zip function. Skipping this file, it will not be " \
+                    print ("WARNING: The zip file filename", repr(filename), "is too short and includes a null byte."
+                    print ("WARNING: This is not supported by the create_zip function. Skipping this file, it will not be " \
                           "included in the created zip file."
                     continue
                 filename_placeholder = cur_char * len(filename)
@@ -5669,7 +5669,7 @@ class BackdooredFile:
         return c
 
     def run_command(self, command):
-        # print " ".join(command)
+        # print (" ".join(command)
         # os.devnull also works on Windows
         se = file(os.devnull, "w")
         so = file(os.devnull, "w")
@@ -5728,7 +5728,7 @@ class BackdooredFile:
         # Sanity check to see if programmer didn't pass a payload_func, that includes MARKER_COLLAB_URL
         payload, _ = payload_func()
         if BurpExtender.MARKER_COLLAB_URL in payload:
-            print "Warning:", BurpExtender.MARKER_COLLAB_URL, "found in payload for BackdooredFile, " \
+            print ("Warning:", BurpExtender.MARKER_COLLAB_URL, "found in payload for BackdooredFile, " \
                   "but this payload can not be altered after it is injected into a binary file format! Payload:", repr(payload)
 
         # The formats parameter specifies the formats the *module* wants to send
@@ -5782,15 +5782,15 @@ class BackdooredFile:
             f.write(content)
             f.flush()
             f.close()
-            # print "content", repr(content)
+            # print ("content", repr(content)
             for name, cmd_args, supported_types in techniques:
                 if ext in supported_types:
                     cmd = [self._tool, ]
                     payload, expect = payload_func()
                     if len(payload) < BackdooredFile.MINIMUM_PAYLOAD_LENGTH:
-                        print "Warning: Can not produce payloads with size smaller than {}, as the placeholder " \
+                        print ("Warning: Can not produce payloads with size smaller than {}, as the placeholder " \
                               "for exiftool would not be unique enough".format(BackdooredFile.MINIMUM_PAYLOAD_LENGTH)
-                        print "Warning: Not creating such files"
+                        print ("Warning: Not creating such files"
                         return
                     payload_placeholder = self.placeholder_char * len(payload)
                     if name in self.exiftool_techniques_thumbnail:
@@ -5808,9 +5808,9 @@ class BackdooredFile:
                         pass
                     cmd.append(output_path)
                     cmd.append(input_path)
-                    # print "output file exists:", os.path.isfile(output_path)
-                    # print "input file exists:", os.path.isfile(input_path)
-                    # print "input file contents:", repr(file(input_path, "rb").read())
+                    # print ("output file exists:", os.path.isfile(output_path)
+                    # print ("input file exists:", os.path.isfile(input_path)
+                    # print ("input file contents:", repr(file(input_path, "rb").read())
                     self.run_command(cmd)
                     if os.path.isfile(output_path):
                         new_content = file(output_path, "rb").read()
@@ -5845,15 +5845,15 @@ class BackdooredFile:
                         if payload_placeholder in new_content:
                             c = new_content.replace(payload_placeholder, payload)
                             if payload in c:
-                                # print "Successfully produced image file with payload in the following metadata:", name, ext
+                                # print ("Successfully produced image file with payload in the following metadata:", name, ext
                                 yield payload, expect, name, ext, c
                         else:
-                            print "Warning: Payload missing. IPTC:Keywords has length limit of 64. " \
+                            print ("Warning: Payload missing. IPTC:Keywords has length limit of 64. " \
                                   "Technique: {}, File type: {}, Payload length: {}, Payload start: {}" \
                                   "".format(name, ext, len(payload_placeholder), repr(payload[:100]))
-                            # print "Content:", repr(new_content)
+                            # print ("Content:", repr(new_content)
                     else:
-                        print "Error: The following image could not be created (exiftool didn't create a file):", name, ext
+                        print ("Error: The following image could not be created (exiftool didn't create a file):", name, ext
             try:
                 os.remove(input_path)
             except OSError:
@@ -5982,7 +5982,7 @@ class XxeXmp(Xxe):
                     c = self._send_collab(injector, burp_colab, types, basename, content, old_xmp, new_xmp, issue)
                     colab_tests.extend(c)
             else:
-                print "Error: No XMP in file:", repr(content)
+                print ("Error: No XMP in file:", repr(content)
         return colab_tests
 
     def _fix_length(self, xmp, length):
@@ -6307,7 +6307,7 @@ class XxeOfficeDoc(Xxe):
             if not filenames or item.filename in filenames:
                 for marker, replace_str in markers:
                     if marker in file_content:
-                        # print "found", marker, "replacing with", replace_str
+                        # print ("found", marker, "replacing with", replace_str
                         file_content = file_content.replace(marker, replace_str)
                     else:
                         # if not all markers are in there, use the original content
@@ -7182,7 +7182,7 @@ class Fingerping:
                 try:
                     result = test.function(image)
                 except Exception, e:
-                    print "Fingerping test function threw an exception, ignoring this test for this picture. " \
+                    print ("Fingerping test function threw an exception, ignoring this test for this picture. " \
                           "This might occur if the server resized the image, as this module assumes certain sizes. " \
                           "Test filename:", test.filename, "Test function:", repr(test.function) #, "Content:"
                     # print repr(content)
@@ -7198,7 +7198,7 @@ class Fingerping:
                 if test.name not in fingerprint.results:
                     # warn if a fingerprint is missing the result for the test being run
                     if warn:
-                        print "warning, missing key", test.name, "in", fingerprint.name
+                        print ("warning, missing key", test.name, "in", fingerprint.name
                 elif fingerprint.results[test.name] == result:
                     fingerprintScores[fingerprint.name] += 1
         return results, fingerprintScores
@@ -7244,7 +7244,7 @@ class DownloadMatcherCollection(object):
         host = self._get_host(url)
         with self._thread_lock:
             if host not in self._collection:
-                print "The DownloadMatcherCollection has now passive checks (at least the global matchers) for", host
+                print ("The DownloadMatcherCollection has now passive checks (at least the global matchers) for", host
                 self._collection[host] = set()
         return host
 
@@ -7312,22 +7312,22 @@ class DownloadMatcherCollection(object):
             if brr_host not in self._scope_mapping:
                 self._scope_mapping[brr_host] = set()
             if host not in self._scope_mapping[brr_host]:
-                print "Scope is adding", repr(host), "as part of scope of", repr(brr_host)
+                print ("Scope is adding", repr(host), "as part of scope of", repr(brr_host)
                 self._scope_mapping[brr_host].add(host)
 
     def get_matchers_for_url(self, url):
         hostport = self._get_host(url)
         if not hostport:
-            print "Couldn't extract hostport from the url", url
+            print ("Couldn't extract hostport from the url", url
             return []
         with self._thread_lock:
             if hostport in self._collection:
-                # print "Found DownloadMatchers", hostport, "that correspond to", url
+                # print ("Found DownloadMatchers", hostport, "that correspond to", url
                 return self.with_global(hostport, self._collection[hostport])
 
             name = self.get_scope(hostport)
             if name:
-                # print "Found DownloadMatchers for", name, "that can be used for", url
+                # print ("Found DownloadMatchers for", name, "that can be used for", url
                 return self.with_global(name, self._collection[name])
         return []
 
@@ -7370,11 +7370,11 @@ class DownloadMatcherCollection(object):
         for host in self._collection:
             serialized_collection[host] = []
             for matcher in self._collection[host]:
-                # print "Serialization", host, type(matcher.serialize()), repr(matcher.serialize())
+                # print ("Serialization", host, type(matcher.serialize()), repr(matcher.serialize())
                 serialized_collection[host].append(matcher.serialize())
                 no_of_matchers += 1
                 if no_of_matchers >= BurpExtender.MAX_SERIALIZED_DOWNLOAD_MATCHERS:
-                    print "DownloadMatcher tried to serialize more than {} matchers, which at one point would " \
+                    print ("DownloadMatcher tried to serialize more than {} matchers, which at one point would " \
                           "slow done matching. Ignoring any further DownloadMatchers." \
                           "".format(BurpExtender.MAX_SERIALIZED_DOWNLOAD_MATCHERS)
                     return serialized_collection, self._scope_mapping
@@ -7385,15 +7385,15 @@ class DownloadMatcherCollection(object):
         no_of_matchers = 0
         serialized_collection, self._scope_mapping = serialized_object
         for host in serialized_collection:
-            print "Deserializing DownloadMatchers for", host
+            print ("Deserializing DownloadMatchers for", host
             self._collection[host] = set()
             for matcher in serialized_collection[host]:
-                # print "Deserialization", host, type(matcher), repr(matcher)
+                # print ("Deserialization", host, type(matcher), repr(matcher)
                 temp_matcher = DownloadMatcher(None)
                 temp_matcher.deserialize(matcher)
                 self._collection[host].add(temp_matcher)
                 no_of_matchers += 1
-        print "Deserialized {} DownloadMatchers. If you think this is too much, check option to delete settings " \
+        print ("Deserialized {} DownloadMatchers. If you think this is too much, check option to delete settings " \
               "and reload extension. Anyway, if it grows more than {}, some are discarded for performance reasons." \
               "".format(no_of_matchers, BurpExtender.MAX_SERIALIZED_DOWNLOAD_MATCHERS)
 
@@ -7545,7 +7545,7 @@ class FileChooserButton(JButton, ActionListener):
             # print chooser.getSelectedFile()
             self.field.setText(FloydsHelpers.u2s(chooser.getSelectedFile().toString()))
         else:
-            print "No file selected"
+            print ("No file selected"
 
 
 class DirectoryChooserButton(JButton, ActionListener):
@@ -7565,7 +7565,7 @@ class DirectoryChooserButton(JButton, ActionListener):
             # print chooser.getSelectedFile()
             self.field.setText(FloydsHelpers.u2s(chooser.getSelectedFile().toString()))
         else:
-            print "No directory selected"
+            print ("No directory selected"
 
 
 class Table(JTable, IMessageEditorController):
@@ -7721,14 +7721,14 @@ class CustomMultipartInsertionPoint(IScannerInsertionPoint):
                 self._body_before += self.filename_del
                 self._body_after = self._body_after[len(self.filename_del):]
             else:
-                print "Warning: Filename parameter in multipart does not seem to be quoted... using newline as end delimiter"
+                print ("Warning: Filename parameter in multipart does not seem to be quoted... using newline as end delimiter"
                 self.filename_del = "\n"
 
             end_index = -1
             while end_index < 0:
                 end_index = self._body_after.find(self.filename_del)
                 if end_index == -1:
-                    print "Error: Filename parameter in multipart starts with", self.filename_del, "but does not seem to end with it."
+                    print ("Error: Filename parameter in multipart starts with", self.filename_del, "but does not seem to end with it."
                     self._is_multipart_filename = False
                     return
                 elif end_index > 0 and self._body_after[end_index - 1] == "\\":
@@ -7985,7 +7985,7 @@ class CollaboratorMonitorThread(Thread):
         while not self.stop:
             if not self.paused:
                 with self.lock:
-                    # print "Checking interactions..."
+                    # print ("Checking interactions..."
                     self.check_interactions()
             for _ in range(0, 8):
                 if self.stop:
@@ -8012,8 +8012,8 @@ class CollaboratorMonitorThread(Thread):
             self.saved_interactions_for_later = {}
             # Loop through interactions and add issues
             for found_colab_url in interactions_dict:
-                # print "colab_dict:", repr(colab_dict)
-                # print "found_colab_url:", repr(found_colab_url)
+                # print ("colab_dict:", repr(colab_dict)
+                # print ("found_colab_url:", repr(found_colab_url)
                 try:
                     colab_test = colab_dict[found_colab_url]
                 except KeyError:
@@ -8031,7 +8031,7 @@ class CollaboratorMonitorThread(Thread):
                     self.extension._add_scan_issue(issue)
             if self.saved_interactions_for_later:
                 if self.print_message_counter % 10 == 0:
-                    print "Found Collaborator interactions where we didn't get the issue details yet, saving for later... " \
+                    print ("Found Collaborator interactions where we didn't get the issue details yet, saving for later... " \
                         "This message shouldn't be printed anymore after all scans are finished."  #, repr(self.saved_interactions_for_later.keys())
                 self.print_message_counter += 1
 
@@ -8456,10 +8456,10 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
                 if bi.exiftool_present():
                     self.image_exiftool = path
                     self.show_exiftool_field = False
-                    print "Found working exiftool by invoking '" + path + "' on the command line"
+                    print ("Found working exiftool by invoking '" + path + "' on the command line"
                     break
             else:
-                print "Searched for exiftool but did not find a proper executable..."
+                print ("Searched for exiftool but did not find a proper executable..."
 
         # Options Download-Again:
         # Make configurable
@@ -8871,7 +8871,7 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
             try:
                 parsed = ast.literal_eval(value)
             except (ValueError, SyntaxError), e:
-                print "Issue when processing your specified", input
+                print ("Issue when processing your specified", input
                 print e
             if isinstance(parsed, str):
                 output = parsed
@@ -8975,14 +8975,14 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
             self.image_height = int(FloydsHelpers.u2s(self.tf_image_height.getText()))
             OptionsPanel.mark_configured(self.lbl_image_height)
         except Exception, e:
-            print "Exception, tf_image_height", FloydsHelpers.u2s(self.tf_image_height.getText()), "is not numeric"
+            print ("Exception, tf_image_height", FloydsHelpers.u2s(self.tf_image_height.getText()), "is not numeric"
             self.image_height = 200
             OptionsPanel.mark_misconfigured(self.lbl_image_height)
         try:
             self.image_width = int(FloydsHelpers.u2s(self.tf_image_width.getText()))
             OptionsPanel.mark_configured(self.lbl_image_width)
         except Exception, e:
-            print "Exception, tf_image_width", FloydsHelpers.u2s(self.tf_image_width.getText()), "is not numeric"
+            print ("Exception, tf_image_width", FloydsHelpers.u2s(self.tf_image_width.getText()), "is not numeric"
             self.image_width = 200
             OptionsPanel.mark_misconfigured(self.lbl_image_width)
         if self._global_options and self.show_exiftool_field:
@@ -9025,14 +9025,14 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
             self.fuzzer_random_mutations = int(FloydsHelpers.u2s(self.tf_fuzzer_random_mutations.getText()))
             OptionsPanel.mark_configured(self.lbl_fuzzer_random_mutations)
         except:
-            print "Exception, fuzzer_random_mutations", FloydsHelpers.u2s(self.tf_fuzzer_random_mutations.getText()), "is not numeric"
+            print ("Exception, fuzzer_random_mutations", FloydsHelpers.u2s(self.tf_fuzzer_random_mutations.getText()), "is not numeric"
             self.fuzzer_random_mutations = 10
             OptionsPanel.mark_misconfigured(self.lbl_fuzzer_random_mutations)
         try:
             self.fuzzer_known_mutations = int(FloydsHelpers.u2s(self.tf_fuzzer_known_mutations.getText()))
             OptionsPanel.mark_configured(self.lbl_fuzzer_known_mutations)
         except:
-            print "Exception, fuzzer_known_mutations", FloydsHelpers.u2s(self.tf_fuzzer_known_mutations.getText()), "is not numeric"
+            print ("Exception, fuzzer_known_mutations", FloydsHelpers.u2s(self.tf_fuzzer_known_mutations.getText()), "is not numeric"
             self.fuzzer_known_mutations = 10
             OptionsPanel.mark_misconfigured(self.lbl_fuzzer_known_mutations)
 
@@ -9107,10 +9107,10 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
     def _test_preflight_thread(self):
         msg = FloydsHelpers.jb2ps(self.scan_controler.preflight_req_view.getMessage())
         if msg:
-            # print "_test_preflight_thread", self.scan_controler.preflight_req_service
+            # print ("_test_preflight_thread", self.scan_controler.preflight_req_service
             msg = msg.replace("${RANDOMIZE}", str(random.randint(100000000000, 999999999999)))
             resp = self._callbacks.makeHttpRequest(self.scan_controler.preflight_req_service, msg).getResponse()
-            # print "Testing preflight ", self.scan_controler.preflight_req_service
+            # print ("Testing preflight ", self.scan_controler.preflight_req_service
             if resp:
                 resp = FloydsHelpers.jb2ps(resp)
                 self.scan_controler.set_preflight_resp(resp)
@@ -9133,7 +9133,7 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
     def _test_configuration_thread(self):
         msg = FloydsHelpers.jb2ps(self.scan_controler.redownload_req_view.getMessage())
         if msg and self.scan_controler.redownload_req_service:
-            # print "_test_configuration_thread", self.scan_controler.redownload_req_service
+            # print ("_test_configuration_thread", self.scan_controler.redownload_req_service
             msg = msg.replace("${RANDOMIZE}", str(random.randint(100000000000, 999999999999)))
             resp = self._callbacks.makeHttpRequest(self.scan_controler.redownload_req_service, msg).getResponse()
             if resp:
@@ -9344,7 +9344,7 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
         flexiinjector_ran = self._burp_extender.run_flexiinjector(self.scan_controler.brr, self)
         # If that didn't work (eg. not configured), fallback to MultipartInjector:
         if not flexiinjector_ran:
-            print "Does not seem to be a FlexiInjector request."
+            print ("Does not seem to be a FlexiInjector request."
             # Multipart:
             # A little trickier, as we need to mimic an injectionPoint provider...
             insertionPoint = CustomMultipartInsertionPoint(self._helpers, BurpExtender.NEWLINE, FloydsHelpers.jb2ps(self.scan_controler.brr.getRequest()))
@@ -9510,10 +9510,10 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
                     preflight_rr = CustomRequestResponse('', '', service, req, r)
                     resp = FloydsHelpers.jb2ps(r)
                 else:
-                    print "No Preflight response, aborting redownload for: \n", preflight_request
+                    print ("No Preflight response, aborting redownload for: \n", preflight_request
                     return None, None
             else:
-                print "No Preflight request could be calculated, aborting redownload for: \n", preflight_request
+                print ("No Preflight request could be calculated, aborting redownload for: \n", preflight_request
                 return None, None
 
         redownload_request = self.scan_controler.redownload_req_view.getMessage()
@@ -9527,18 +9527,18 @@ class OptionsPanel(JPanel, DocumentListener, ActionListener):
                 # so no more processing of the response required here
                 # However, if we want to support tests that rely on knowing what was downloaded
                 # such as "fingerping", then we need to return this to the module
-                # print "redownloader_try_redownload 2", service
+                # print ("redownloader_try_redownload 2", service
                 req = req.replace("${RANDOMIZE}", str(random.randint(100000000000, 999999999999)))
                 r = self._callbacks.makeHttpRequest(service, req).getResponse()
                 if r:
                     download_rr = CustomRequestResponse('', '', service, req, r)
                 else:
-                    print "No Download response, aborting redownload for: \n", req
+                    print ("No Download response, aborting redownload for: \n", req
                     return None, None
             else:
                 # Happens quiet often, eg. when the server rejected our uploaded file and gave a different response
                 # Such as a 500 or 400 error, so this case is in the usual workflow
-                # print "Couldn't calculate download request", unicode(service), req
+                # print ("Couldn't calculate download request", unicode(service), req
                 return None, None
         return preflight_rr, download_rr
 
