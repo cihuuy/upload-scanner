@@ -698,7 +698,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
 
         # We can only work with requests that also have a response:
         if not brr.getRequest() or not brr.getResponse():
-            print ("Tried to send a request where no response came back via context menu to the UploadScanner. Ignoring."
+            print ("Tried to send a request where no response came back via context menu to the UploadScanner. Ignoring.")
         else:
             with self.globals_write_lock:
                 # right part
