@@ -510,7 +510,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
             #('', BurpExtender.MARKER_ORIG_EXT, 'text/html'),
         }
 
-        print "Creating UI..."
+        print ("Creating UI...")
         self._create_ui()
 
         with self.globals_write_lock:
@@ -533,7 +533,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
         # Get notified when extension is unloaded
         callbacks.registerExtensionStateListener(self)
 
-        print "Extension fully registered and ready"
+        print ("Extension fully registered and ready")
 
     def _create_ui(self):
 
@@ -581,7 +581,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
         for index in self._option_panels:
             self._option_panels[index].stop_scan(None)
         self.serialize_settings()
-        print "Extension unloaded"
+        print ("Extension unloaded")
 
     def serialize_settings(self):
         self.save_project_setting("UploadScanner_dl_matchers", "")
@@ -600,9 +600,9 @@ class BurpExtender(IBurpExtender, IScannerCheck,
             self.save_project_setting('UploadScanner_tabs',
                                                  pickle.dumps([self._option_panels[x].serialize() for x in self._option_panels]).encode("base64"))
 
-            print "Saved settings..."
+            print ("Saved settings...")
         else:
-            print "Deleted all settings..."
+            print ("Deleted all settings...")
 
     def deserialize_settings(self):
         try:
@@ -637,11 +637,11 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                 cm = pickle.loads(k.decode("base64"))
                 if cm:
                     self._global_opts.deserialize(cm)
-            print "Restored settings..."
+            print ("Restored settings...")
         except:
             e = traceback.format_exc()
-            print "An error occured when deserializing settings. We just ignore the serialized data therefore."
-            print e
+            print ("An error occured when deserializing settings. We just ignore the serialized data therefore.")
+            print (e)
 
         try:
             self.save_project_setting("UploadScanner_dl_matchers", "")
@@ -650,8 +650,8 @@ class BurpExtender(IBurpExtender, IScannerCheck,
             self.save_project_setting("UploadScanner_tabs", "")
         except:
             e = traceback.format_exc()
-            print "An error occured when storing empty serialize data We just ignore it for now."
-            print e
+            print ("An error occured when storing empty serialize data We just ignore it for now.")
+            print (e)
 
     def save_project_setting(self, name, value):
         request = """GET /"""+name+""" HTTP/1.0
@@ -950,7 +950,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
         self._add_scan_issue(issue)
 
     def _add_scan_issue(self, issue):
-        print "Reporting", issue.name
+       print ("Reporting"), issue.name
         #print issue.toString()
         self._callbacks.addScanIssue(issue)
 
@@ -973,7 +973,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                 if insertionPoint.getInsertionPointName() == "filename":
                     req = base_request_response.getRequest()
                     if not req:
-                        print "doActiveScan called with BaseRequestResponse with no request. Ignoring."
+                        print ("doActiveScan called with BaseRequestResponse with no request. Ignoring.")
                         return
                     print "Multipart filename found!"
                     if not options:
@@ -981,7 +981,7 @@ class BurpExtender(IBurpExtender, IScannerCheck,
                     injector = MultipartInjector(base_request_response, options, insertionPoint, self._helpers, BurpExtender.NEWLINE)
                     self.do_checks(injector)
                 else:
-                    print "This is not a type file but something else in a multipart message:", insertionPoint.getInsertionPointName()
+                    print ("This is not a type file but something else in a multipart message:"), insertionPoint.getInsertionPointName()
         except:
             self.show_error_popup(traceback.format_exc(), "doActiveScan", base_request_response)
             if options and options.redl_enabled:
